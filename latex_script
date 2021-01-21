@@ -1,0 +1,240 @@
+\documentclass[12pt]{article}
+
+% If you're new to LaTeX, here's some short tutorials:
+% https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes
+% https://en.wikibooks.org/wiki/LaTeX/Basics
+
+% Formatting
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[titletoc,title]{appendix}
+\usepackage{wrapfig}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{biblatex}
+\addbibresource{ref.txt}
+%Includes "References" in the table of contents
+\usepackage[nottoc]{tocbibind}
+
+% Math
+% https://www.overleaf.com/learn/latex/Mathematical_expressions
+% https://en.wikibooks.org/wiki/LaTeX/Mathematics
+\usepackage{amsmath,amsfonts,amssymb,mathtools}
+
+% Images
+% https://www.overleaf.com/learn/latex/Inserting_Images
+% https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+\usepackage{graphicx,float}
+
+% Tables
+% https://www.overleaf.com/learn/latex/Tables
+% https://en.wikibooks.org/wiki/LaTeX/Tables
+
+% Algorithms
+% https://www.overleaf.com/learn/latex/algorithms
+% https://en.wikibooks.org/wiki/LaTeX/Algorithms
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algorithmic}
+
+% Code syntax highlighting
+% https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
+\usepackage{minted}
+\usemintedstyle{borland}
+
+% References
+% https://www.overleaf.com/learn/latex/Bibliography_management_in_LaTeX
+% https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
+\usepackage{biblatex}
+\addbibresource{EconPapers.bib}
+
+% Title content
+
+\title{A Brief Time Series Analysis of the German Term Structure of Interest Rate}
+\author{Gaspare Mattarella n°965461}
+\date{December 6, 2020}							
+
+\begin{document}
+\maketitle
+
+% Introduction and Overview
+\section{Introduction}
+In economics it is referred to Term Structure of the interest rate as the curve showing several yields to maturity or interest rates across different contract lengths for a similar debt contract. 
+The curve shows the relation between the level of the interest rate and the term to maturity of the debt for a given borrower in a given currency. \par
+Generally, the term structure of interest rates is a good measure of future economic growth expectations.
+
+If there is a highly positive normal curve, it is a signal investors believe future economic growth to be strong and inflation high.
+
+If there is a highly negative inverted curve, it is a signal investors believe future economic growth to be sluggish and inflation low. 
+A flat yield curve means investors are unsure about the future and if the Pure Expectations Hypnotises holds, we can use the information in the term structure today to find out the market’s expectation of the rates in the future.  
+
+One of the most interesting piece of information in the term structure of interest rate is the difference  $i_{n,t} - i_{1,t}$. 
+This is sometimes known as "term spread", or only as "spread". It can be used to derive the expectations of future rates dynamics so it would be interesting to take a dive into it. \par
+
+In this analysis we are going to explore the relation between the term structure of two different German Bunds term structures with one month maturity and one year muturity , their spread and how this relationship is well modelled as a cointegrated system.
+
+
+
+
+\newpage
+\section{Overview and Testing}
+
+At a first glance we can see from \textit{Figure 1} that according to its fluctuations, the two series are definitely not stationary but it seems nevertheless pretty obvious that when they move, they move along. 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\linewidth]{plots/gr1.pdf}
+  \caption{Term Structure of M1 and M12}
+  \label{fig:graph1}
+\end{figure}
+
+This might be a first hint for the evidence of the economic theory, which generally assumes that interest rates, and Bonds yields in particular, are well described as I(1) processes (Granger \& Hall, 1992). 
+
+We’ll start our analysis by testing for the presence of a Unit Root in both the series M1 and M12. That would mean that the series are not mixing, i.e. the effect of past values on the present does not disappear rapidly.
+
+Augmented Dickey-Fuller unit root test statistics were computed for both the yield series. The full sample test statistics show no evidence against the null hypothesis that there is a unit root in yield levels.
+We could further test the series in first differences to be sure they are not I(2) processes but this time we can strongly reject the null in both our series.
+
+
+As stated before, looking at the series, they seem to move together or, more precisely, to be cointegrated.
+We now now, thanks to Granger \& Hall that if both series are Integrated of order 1 and exists a linear combination of the two such that their residuals are $I(0)$ then it can be rewritten as  
+
+\begin{equation}
+    A(L)\Delta y_t = \gamma + B(L)\Delta x_t +\alpha(y_{t-1} -\beta_0 - \beta_1 x_{t-1}) + u_t
+\end{equation} 
+
+
+if both variables are integrated and this Error Correction Mechanism exists, they are cointegrated by the Engle–Granger representation theorem.
+\par
+Statistical significance of the $\alpha$ will show that the error correction model is a valid representation of the data, and support the hypothesis that the spread between the two yield series is cointegrating.
+\par    
+\begin{wrapfigure}{l}{0.5\textwidth}
+  \centering
+    \includegraphics[width =0.4\textwidth]{plots/adf_m1.png}
+    \includegraphics[width =0.4\textwidth]{plots/adf_12.png}
+  \caption{Augmented Dickey Fuller Test for M1 and M12}
+  \label{fig:coffee}
+\end{wrapfigure}
+
+
+The error correction model has a very sensible economic interpretation in this context. Equation (1) shows that although yields on bonds of different maturity may diverge in the short run, the yields will adjust when the spreads between them deviate from the equilibrium mean, so that in the long run yields of different maturity will move together. 
+\par 
+
+
+The error correction model does not necessarily imply that yields adjust because the spreads between them are out of equilibrium (Granger \& Hall, 1992), the spreads might measure anticipated changes in yields. Using the short yields as an example, this merely implies that agents have more information in the spread for forecasting changes in short yields, than is available in the history of short yields alone. 
+Thus the spreads are useful for forecasting changes in short yields, and the error correction model arises because of agents' forward looking behavior.\par
+
+To check for cointegration, we will now test this hypothesis using the Engle-Granger method. The test, as shown in \textit{Figure 3}, significantly reject the null hypothesis that the two series are not cointegrated.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[scale = 0.7]{plots/engle_granger.png}
+    \caption{Engle - Granger Cointegration test}
+    \label{fig:my_label4}
+\end{figure}
+
+For what it concerns the choice of the dependent variable, we will temporarily skip on that also thanks to the fact that the results of the test are identical in both ways, as we should expect when the samples are representative.
+\section{Estimation}
+Now that it is clear that the two series are cointegrated, we can actually estimate our regression exploiting the Vector Error Correction Method. 
+\par
+
+Firstly, we need to choose the right number of lags to introduce in our regression. Dealing with a VAR we could indifferently use Information Criteria or we could write a VAR(p - 1) as a restriction of a VAR(p) and test for it. 
+\par
+
+In this particular case, we are going to rely on the Schwarz information criterion which as shown in \textit{Figure 4}, indicates to choose only 2 lags. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{plots/inf_criteria.png}
+    \caption{Lag selection Information Criteria}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{wrapfigure}{l}{0.4\textwidth}
+  \centering
+    \includegraphics[width=0.4\textwidth]{plots/Vecm.png}
+  \caption{VECM Estimation}
+\end{wrapfigure}
+Now that we know the correct number of lags we can proceed with the estimation of the Vector Error Correction Mechanism  with (p-1) lags. 
+The model estimated with Vector Error Correction Method is showed in \textit{Figure 5}.
+The Error Correction Term is $ECT_{t-1}=[M1_{t-1} - 1.005M12_{t-1} + 0.12]$ and it can be interpreted as the long run relation among the variables.  \par
+The cointegration coefficient -0.33 seems highly significant and can be interpreted as the speed of correction of previous year deviation from long run equilibrium. 
+Now, looking at the standard errors of the coefficients we could test and impose some restrictions, particularly interesting would be testing for B(1,1) = 1, B(1,2) = -1 and A(2,1) = 0. From \textit{Figure 12} we know that the restrictions turned out to not be rejected so we can now impose them on the model.
+\par 
+Now that we have our model we can finally look for the structuralized Impulse Response Function exploiting the Cholesky decomposition.
+
+That is rather the most delicate part of analysis since the decomposition of the innovations $\epsilon_t$ in orthogonal components depend own how we order the residuals. We will compute the Structuralized Impulse Response Function for both the possible combinations to first compare them. 
+Let's remember that Confidence intervals are omitted due to the fact that they would be inconsistent anyway.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \centering
+    \includegraphics[width=0.5\textwidth]{plots/sirf_m1_m12.pdf}
+  \caption{SIRF M1M12}
+\end{wrapfigure}
+
+In \textit{Figure 6} we ordered the residuals in a way such that for a simultaneous shock the credit goes to M1. 
+What we can observe is that the response of the 1 month maturity yields to a shock of itself has an high impact in the first 3 lags and after that it asses itself around a constant different from 0. \par
+The response of M1 to a shock of M12 seems instead to increase with the increase of lags. For what it concerns, instead, the response of the 1 year maturity yields to a shock in M1 it appears to be very close to 0 although the lack of confidence intervals comes to no help to assert such a thing. Finally, the response of the 1 year maturity yields to its own shocks seems to be high, grow after few lags and asses to an higher constant than the starting one. 
+
+\begin{wrapfigure}{l}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{plots/sirf_m12_m1.pdf}
+  \end{center}
+  \caption{SIRF M12M1}
+\end{wrapfigure}
+
+
+
+In \textit{Figure 7} we ordered the residuals in a way such that for a simultaneous shock, the credit goes to the 1 year maturity yields. 
+
+The difference we can spot in this second ordering concern the fact that responses of 1 month maturity yields and 1 year maturity yields to this last one seems to be higher in general while the responses to shocks of M1 either rapidly go to 0 after few lags in case of M1 shocks itself, or it seems to be no different from 0 at all in the case of M12 to M1. 
+There are scientific evidences (Granger \& Hall, 1992) stating that this type of model suggests that yields of longer maturities "drive" the term structure, with short-term yields adjusting to movements in the longer term yields. One interpretation of this observation is based on an expectations hypothesis argument. The spreads between yields at the longer end of the term structure contain information about future shorter-term rates, and current short-term rates adjust according to this information.
+
+Hence, we're going to order the factors of the Choleski decomposition so that M12, the 1 year maturity term, is accounted for the correlated part of the shock (\textit{Figure 7}). 
+
+Something that has to be highlighted is that M1 and M12, after few lags, are moving together because of cointegration. In the long run they are completely driven by what happens to M12. A shock of M1 instead, through the ECM, is then brought down to 0.
+\par
+Next and final step of the analysis is to plot the Forecast Error Variance Decomposition as in \textit{Figure 8}. 
+It is sensible too to the ordering of the factors in the Choleski decomposition but it can be an incredibly useful tool indicating how much of the dynamics of M1 is driven by M12 and vice versa. Here we can observe that pretty much all the dynamics of M12 is driven by itself an nothing is driven by M1. The results of M1 are rather the most interesting one for our analysis since we can clearly spot how most of the dynamic of M1 is driven by itself in the short run with a steady decrease in a dozen of lags while it is driven increasingly more by M12 in the long run. Those are exactly the results that we were expecting according to economic theory of expectation hypothesis.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\linewidth]{plots/vevd.pdf}
+  \caption{Forecast Error Variance Decomposition for M1 and M12}
+  \label{fig:graph1}
+\end{figure}
+
+Further research may suggest a useful way of identifying the common non stationary factor so that it can then be estimated and studied. Much might be learned about the term structure if this common factor can be related to economic variables such as monetary growth and/or inflation, and further research on the common factor interpretation of cointegration in the term structure will undoubtedly improve our understanding of how the term structure changes over time.
+
+\newpage
+\section{References}
+\textbf{Hall, A., Anderson, H., \& Clive W. J. Granger. (1992).A Cointegration Analysis of Treasury Bill Yields. The Review of Economics and Statistics, 74(1), 116-126. doi:10.2307/2109549}
+
+% Appendices
+\section{Appendices}
+In this last section we will upload all the software output we actually used for the analysis but that had no chance to be uploaded in the main document.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.6\linewidth]{plots/adf_d(m1).png}
+    \caption{ADF test for Differenced M1}
+    \label{fig:my_label}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.6\linewidth]{plots/adf_d(m12).png}
+    \caption{ADF test for Differenced M12}
+    \label{fig:my_label}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.6\linewidth]{plots/Vecm_entire.pdf}
+    \caption{Entire output of the Estimated Vecm}
+    \label{fig:my_label}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.6\linewidth]{plots/vecm_restrictions.png}
+    \caption{Test for VECM restrictions}
+    \label{fig:my_label}
+\end{figure}
+
+\end{document}
